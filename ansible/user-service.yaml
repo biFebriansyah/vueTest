@@ -1,0 +1,33 @@
+---
+- hosts: ansible-server
+  vars:
+    projectName: vuetest-front
+    dockerUser: bukanebi
+    gitRepo: https://github.com/biFebriansyah/vueTest.git
+
+  tasks:
+    - name: remove project if exist
+      command: sudo rm -rf {{projectName}}
+      args:
+        chdir: /opt/project
+      ignore_errors: yes
+
+    - name: clone from github
+      command: git clone {{gitRepo}} {{projectName}}
+      args:
+        chdir: /opt/project
+
+    - name: create docker image
+      command: docker build -t {{projectName}}-image:latest .
+      args:
+        chdir: /opt/project/{{projectName}}
+
+    - name: taging image
+      command: docker tag {{projectName}}-image {{dockerUser}}/{{projectName}}-image
+
+    - name: push image on to dockerhub
+      command: docker push {{dockerUser}}/{{projectName}}-image
+
+    - name: remove docker images form ansible server
+      command: docker rmi {{projectName}}-image:latest {{dockerUser}}/{{projectName}}-image
+      ignore_errors: yes

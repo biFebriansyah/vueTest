@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rentproject
+---
+apiVersion: v1
+data:
+  PGHOST: "34.221.5.136"
+  PGUSER: "bukanebi"
+  PGDATABASE: "Rentapp"
+  PGPASSWORD: "bukalapak"
+  PGPORT: "5439"
+  SERVICEPORT: "9000"
+  MODE: "Dev"
+
+kind: ConfigMap
+metadata:
+  name: vuetest-maps
+  namespace: rentproject
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vuetest-service
+  namespace: rentproject
+  labels:
+    app: user-services
+    tier: backend
+spec:
+  selector:
+    app: user-services
+    tier: backend
+  type: LoadBalancer
+  ports:
+    - name: serviceport
+      port: 8080
+      targetPort: 8080
+      nodePort: 31648
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vuetest-service
+  namespace: rentproject
+spec:
+  selector:
+    matchLabels:
+      app: user-services
+      tier: backend
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: user-services
+        tier: backend
+      annotations:
+        date: "`date +'%s'`"
+    spec:
+      containers:
+        - name: user-service
+          image: bukanebi/user-service-image
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: vuetest-maps

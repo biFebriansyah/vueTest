@@ -1,0 +1,27 @@
+---
+- name: Create pods using deployment
+  hosts: kubernetes
+  user: admin
+  vars:
+    deployFile: vuetest-service-deploy.yaml
+    projectName: vuetest-front
+
+  tasks:
+    - name: remove file if exist
+      command: rm {{deployFile}}
+      args:
+        chdir: /home/admin
+      ignore_errors: yes
+
+    - name: copy k8s yml file to master node
+      copy:
+        src: /opt/project/{{projectName}}/{{deployFile}}
+        dest: /home/admin/{{deployFile}}
+        owner: admin
+      ignore_errors: yes
+
+    - name: create a deployment
+      command: kubectl apply -f {{deployFile}}
+
+    - name: update deployment with new pods if image updated in docker hub
+      command: kubectl rollout restart deployment reantapp-service --namespace rentproject
