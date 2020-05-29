@@ -25,17 +25,17 @@ metadata:
   name: vuetest-service
   namespace: rentproject
   labels:
-    app: user-services
+    app: vuetest-service
     tier: backend
 spec:
   selector:
-    app: user-services
+    app: vuetest-service
     tier: backend
   type: LoadBalancer
   ports:
     - name: serviceport
-      port: 8080
-      targetPort: 8080
+      port: 8989
+      targetPort: 80
       nodePort: 31648
 
 ---
@@ -47,7 +47,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: user-services
+      app: vuetest-service
       tier: backend
   replicas: 2
   strategy:
@@ -58,17 +58,17 @@ spec:
   template:
     metadata:
       labels:
-        app: user-services
+        app: vuetest-service
         tier: backend
       annotations:
         date: "`date +'%s'`"
     spec:
       containers:
-        - name: user-service
-          image: bukanebi/user-service-image
+        - name: vuetest-service
+          image: bukanebi/vuetest-front-image
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 80
           envFrom:
             - configMapRef:
                 name: vuetest-maps
