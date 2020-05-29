@@ -36,7 +36,7 @@ spec:
     - name: serviceport
       port: 8989
       targetPort: 80
-      nodePort: 31648
+      nodePort: 31647
 
 ---
 apiVersion: apps/v1
