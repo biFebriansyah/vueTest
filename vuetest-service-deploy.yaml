@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: rentproject
+  name: sample
 ---
 apiVersion: v1
 data:
@@ -16,21 +16,21 @@ data:
 kind: ConfigMap
 metadata:
   name: vuetest-maps
-  namespace: rentproject
+  namespace: sample
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: vuetest-service
-  namespace: rentproject
+  name: vuetest-ui
+  namespace: sample
   labels:
-    app: vuetest-service
-    tier: backend
+    app: vuetest
+    tier: frontend
 spec:
   selector:
-    app: vuetest-service
-    tier: backend
+    app: vuetest
+    tier: frontend
   type: LoadBalancer
   ports:
     - name: serviceport
@@ -42,13 +42,13 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vuetest-service
-  namespace: rentproject
+  name: vuetest-ui
+  namespace: sample
 spec:
   selector:
     matchLabels:
-      app: vuetest-service
-      tier: backend
+      app: vuetest
+      tier: frontend
   replicas: 2
   strategy:
     type: RollingUpdate
@@ -58,13 +58,13 @@ spec:
   template:
     metadata:
       labels:
-        app: vuetest-service
-        tier: backend
+      app: vuetest
+      tier: frontend
       annotations:
         date: "`date +'%s'`"
     spec:
       containers:
-        - name: vuetest-service
+        - name: vuetest
           image: bukanebi/vuetest-front-image
           imagePullPolicy: Always
           ports:
