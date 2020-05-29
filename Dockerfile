@@ -1,8 +1,7 @@
 FROM node:lts-alpine as build-stage
 
-RUN mkdir -p /usr/src/vuetest
 
-WORKDIR /usr/src/vuetest
+WORKDIR /app
 
 COPY package*.json ./
 
